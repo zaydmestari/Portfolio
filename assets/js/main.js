@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function callGeminiAPI(userPrompt, loadingId) {
         // ⚠️ REMPLACE cette URL par ton lien Vercel quand tu auras déployé ton projet !
         // Exemple : "https://vercel.app"
-        const url = "http://localhost:3000/api/chat"; 
+        const url = "https://portfoliozayd.vercel.app/"; 
 
         try {
             const response = await fetch(url, {

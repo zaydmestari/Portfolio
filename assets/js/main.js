@@ -148,7 +148,7 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 }
 // ========================================================
-// LOGIQUE DU CHATBOT ULTRA-SOMBRE SANS BOUTON ENVOYER
+// LOGIQUE DU CHATBOT PREMIUM REFAIT (SANS BOUTON ENVOYER)
 // ========================================================
 document.addEventListener("DOMContentLoaded", () => {
     const chatBubble = document.getElementById('chat-bubble');
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
 
-    // Gestion de l'affichage de la boîte au clic
+    // Gestion de l'ouverture et fermeture de la fenêtre
     if (chatBubble && chatContainer && closeChat) {
         chatBubble.addEventListener('click', (e) => {
             e.preventDefault();
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Capture de la touche Entrée pour l'envoi instantané
+    // Déclencheur automatique lors de l'appui sur la touche Entrée
     if (chatInput) {
         chatInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Gestion des suggestions de questions courantes
+    // Liaison globale pour rendre actifs les boutons de questions courantes
     window.sendSuggestion = function(text) {
         processMessage(text);
     };
@@ -231,8 +231,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function callVercelGateway(userPrompt, loadingId) {
-        // ➡️ LIEN VERCEL EXACT ET REFAIT POUR TON PROJET
-        const url = "portfoliozayd.vercel.app"
+        // Lien officiel et exact configuré pour ton backend Vercel
+        const url = "https://vercel.app";
+
         try {
             const response = await fetch(url, {
                 method: 'POST',

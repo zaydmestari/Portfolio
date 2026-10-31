@@ -257,11 +257,11 @@
   <!-- ... Tout le reste de ton portfolio (sections, propos, compétences) ... -->
 
     <!-- ======================================================== -->
-    <!-- INTERFACE PREMIUM DU CHATBOT ULTRA-SOMBRE                -->
+    <!-- INTERFACE PREMIUM DU CHATBOT ULTRA-SOMBRE (CORRIGÉE)     -->
     <!-- ======================================================== -->
     
-    <!-- Styles CSS pour l'interface Ultra-Sombre et Fluide -->
     <style>
+    /* Animation d'ouverture fluide */
     @keyframes chatOpenAnim {
         from { opacity: 0; transform: translateY(30px) scale(0.95); }
         to { opacity: 1; transform: translateY(0) scale(1); }
@@ -271,15 +271,18 @@
         50% { transform: scale(1.2); opacity: 0.5; }
         100% { transform: scale(1); opacity: 1; }
     }
+
+    /* Fenêtre principale remontée pour s'ouvrir au-dessus de la bulle */
     .chat-window {
         display: none;
         position: fixed;
-        bottom: 100px;
+        bottom: 175px; 
         right: 25px;
         width: 360px;
         height: 520px;
         background: rgba(10, 10, 10, 0.95);
         backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         color: #e0e0e0;
         border: 1px solid #1a1a1a;
         border-radius: 20px;
@@ -293,9 +296,11 @@
         display: flex !important;
         animation: chatOpenAnim 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
+
+    /* Bulle du chatbot remontée à bottom: 100px pour ÉVITER LA COLLISION avec le bouton scroll */
     #chat-bubble {
         position: fixed;
-        bottom: 25px;
+        bottom: 100px; 
         right: 25px;
         width: 60px;
         height: 60px;
@@ -318,6 +323,8 @@
         border-color: #007bff;
         box-shadow: 0 12px 30px rgba(0, 123, 255, 0.2);
     }
+
+    /* Zone interne des messages */
     #chat-messages {
         flex: 1;
         padding: 20px;
@@ -327,6 +334,8 @@
         gap: 12px;
         background-color: #050505;
     }
+
+    /* Bloc des questions fréquentes cliquables */
     .quick-questions {
         display: flex;
         flex-wrap: wrap;
@@ -352,11 +361,12 @@
     }
     </style>
 
-    <!-- Bouton Bulle -->
+    <!-- Élément HTML : Bouton Bulle (Placé au-dessus du bouton scroll) -->
     <button id="chat-bubble">💬</button>
 
-    <!-- Fenêtre Principale -->
+    <!-- Élément HTML : Fenêtre du Chatbot -->
     <div id="chat-container" class="chat-window">
+        <!-- Header de l'interface -->
         <div style="background-color: #0f0f0f; padding: 18px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <span style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block; animation: pulseGreen 2s infinite;"></span>
@@ -365,22 +375,25 @@
             <button id="close-chat" style="background: none; border: none; color: #555; cursor: pointer; font-size: 16px;">✖</button>
         </div>
         
+        <!-- Zone des discussions -->
         <div id="chat-messages">
             <div style="background-color: #121212; color: #e0e0e0; padding: 12px 16px; border-radius: 14px; border-top-left-radius: 2px; align-self: flex-start; max-width: 80%; font-size: 13.5px; line-height: 1.45; border: 1px solid #1c1c1c;">
                 Salut ! Je suis l'IA de Zayd. Pose-moi tes questions ou clique sur une suggestion ci-dessous. 💻
             </div>
         </div>
 
+        <!-- Boutons de questions suggérées -->
         <div class="quick-questions">
             <button class="suggestion-btn" onclick="sendSuggestion('Qui est Zayd ?')">Who is Zayd?</button>
             <button class="suggestion-btn" onclick="sendSuggestion('Quels sont tes projets ?')">Projets 🛠️</button>
             <button class="suggestion-btn" onclick="sendSuggestion('Quelles sont tes compétences ?')">Compétences 💻</button>
         </div>
         
+        <!-- Zone de saisie corrigée (Épurée, sans bordure blanche double, sans contour lors du clic) -->
         <div style="padding: 15px; background-color: #0f0f0f; border-top: 1px solid #1a1a1a; display: flex;">
             <input type="text" id="chat-input" placeholder="Écris ton message et appuie sur Entrée..." style="flex: 1; padding: 12px 18px; border-radius: 24px; border: 1px solid #222; background-color: #121212; color: #ffffff; font-size: 13.5px; outline: none; box-sizing: border-box; transition: all 0.2s ease;">
-
-
+        </div>
+        
   <!-- Ton fichier script principal avec version incrémentée anti-cache -->
   <script src="assets/js/main.js"></script>
 

@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
-            appendMessage("Désolé, je rencontre des difficultés à joindre mon serveur Google AI.", 'ai');
+            appendMessage("L'IA ne répond pas.", 'ai');
         }
     }
 

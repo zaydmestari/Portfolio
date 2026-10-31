@@ -147,10 +147,10 @@ if (typeof module !== 'undefined' && module.exports) {
     setupProgressBars
   };
 }
-import { GoogleGenAI } from "@google/generative-ai";
-
+// ========================================================
+// INTEGRATION DU CHATBOT IA GEMINI (ZAYD EL MESTARI)
+// ========================================================
 document.addEventListener("DOMContentLoaded", () => {
-    
     const chatBubble = document.getElementById('chat-bubble');
     const chatContainer = document.getElementById('chat-container');
     const closeChat = document.getElementById('close-chat');
@@ -158,25 +158,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const sendChat = document.getElementById('send-chat');
     const chatMessages = document.getElementById('chat-messages');
 
-    // Initialisation officielle avec ta clé
-    const ai = new GoogleGenAI({ apiKey: "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w" });
+    const apiKey = "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w";
 
-    console.log("Chatbot Zayd configuré avec le module officiel !");
+    console.log("Chatbot Zayd initialisé avec succès !");
 
     if (chatBubble && chatContainer && closeChat) {
         chatBubble.addEventListener('click', (e) => {
             e.preventDefault();
-            if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
-                chatContainer.style.display = 'flex';
-                chatContainer.style.animation = 'chatFadeIn 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards';
-            } else {
-                chatContainer.style.display = 'none';
-            }
+            chatContainer.classList.toggle('chat-open');
         });
 
         closeChat.addEventListener('click', (e) => {
             e.preventDefault();
-            chatContainer.style.display = 'none';
+            chatContainer.classList.remove('chat-open');
         });
     }
 
@@ -236,31 +230,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function callGeminiAPI(userPrompt, loadingId) {
+        // CORRECTION : L'adresse URL est maintenant complète vers Google
+        const url = "https://googleapis.com" + apiKey;
+
+        const requestBody = {
+            contents: [{
+                role: "user",
+                parts: [{ text: userPrompt }]
+            }]
+        };
+
         try {
-            // Appel direct via la méthode officielle du SDK de Google
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: userPrompt,
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
             });
 
+            const data = await response.json();
+            
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            if (response && response.text) {
-                appendMessage(response.text, 'ai');
+            // CORRECTION : Structure de lecture de l'arbre JSON propre à Gemini 2.5
+            if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                const aiResponse = data.candidates[0].content.parts[0].text;
+                appendMessage(aiResponse, 'ai');
+            } else if (data.error) {
+                console.error("Erreur Google AI :", data.error.message);
+                appendMessage("Une erreur d'autorisation s'est produite.", 'ai');
             } else {
-                appendMessage("Je n'ai pas pu obtenir de réponse textuelle.", 'ai');
+                appendMessage("Impossible de lire la réponse de l'IA.", 'ai');
             }
 
         } catch (error) {
-            console.error("Erreur SDK Gemini :", error);
+            console.error("Erreur Fetch :", error);
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
-            appendMessage("Une erreur réseau est survenue avec l'assistant.", 'ai');
+            appendMessage("Erreur réseau lors du chargement de la réponse.", 'ai');
         }
     }
 });
-
-
-
-

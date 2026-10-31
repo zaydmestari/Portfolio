@@ -148,7 +148,7 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 }
 // ========================================================
-// INTEGRATION DU CHATBOT IA GEMINI (ZAYD EL MESTARI)
+// INTEGRATION DU CHATBOT IA GEMINI (VERSION VERCEL)
 // ========================================================
 document.addEventListener("DOMContentLoaded", () => {
     const chatBubble = document.getElementById('chat-bubble');
@@ -157,8 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatInput = document.getElementById('chat-input');
     const sendChat = document.getElementById('send-chat');
     const chatMessages = document.getElementById('chat-messages');
-
-    const apiKey = "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w";
 
     console.log("Chatbot Zayd initialisé avec succès !");
 
@@ -229,18 +227,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return msgDiv.id;
     }
 
-                async function callGeminiAPI(userPrompt, loadingId) {
+    async function callGeminiAPI(userPrompt, loadingId) {
+        // ⚠️ REMPLACE cette URL par ton lien Vercel quand tu auras déployé ton projet !
+        // Exemple : "https://vercel.app"
+        const url = "http://localhost:3000/api/chat"; 
+
         try {
-            // Requête directe avec le bon chemin et ta clé API
-            const response = await fetch("https://googleapis.com", {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        role: "user",
-                        parts: [{ text: userPrompt }]
-                    }]
-                })
+                body: JSON.stringify({ prompt: userPrompt })
             });
 
             const data = await response.json();
@@ -248,24 +244,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            // STRUCTURE CORRIGÉE : Ajout des index [0] pour lire la liste JSON officielle de Google
-            if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-                const aiResponse = data.candidates[0].content.parts[0].text;
-                appendMessage(aiResponse, 'ai');
-            } else if (data.error) {
-                console.error("Erreur Google AI :", data.error.message);
-                appendMessage("L'IA a un problème d'autorisation : " + data.error.message, 'ai');
+            if (data && data.text) {
+                appendMessage(data.text, 'ai');
             } else {
-                appendMessage("Je n'ai pas pu analyser la réponse reçue.", 'ai');
+                appendMessage("Impossible de lire la réponse du serveur.", 'ai');
             }
 
         } catch (error) {
-            console.error("Erreur Fetch :", error);
+            console.error("Erreur passerelle Vercel :", error);
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
-            appendMessage("Erreur réseau lors du chargement de la réponse.", 'ai');
+            appendMessage("Erreur de connexion avec le serveur de l'assistant.", 'ai');
         }
     }
-
-
 });

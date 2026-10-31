@@ -253,41 +253,43 @@
 
   <!-- Back to top button -->
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
+  
   <!-- ======================================================== -->
-<!-- INTERFACE DU CHATBOT IA GEMINI (ZAYD EL MESTARI)          -->
-<!-- ======================================================== -->
+  <!-- INTERFACE DU CHATBOT IA GEMINI (VERSION SÉCURISÉE)       -->
+  <!-- ======================================================== -->
 
-<!-- Bulle Flottante du Chatbot (Placée au-dessus de ton bouton scroll) -->
-<button id="chat-bubble" style="position: fixed; bottom: 100px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; font-size: 26px; cursor: pointer; z-index: 1000; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);">💬</button>
+  <!-- Bulle Flottante du Chatbot (Placée pour ne pas bloquer ton bouton scroll) -->
+  <button id="chat-bubble" style="position: fixed; bottom: 100px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; font-size: 26px; cursor: pointer; z-index: 1000; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);">💬</button>
 
-<!-- Fenêtre Principale de Dialogue (Masquée par défaut) -->
-<div id="chat-container" style="display: none; position: fixed; bottom: 175px; right: 25px; width: 360px; height: 480px; background-color: #0a0a0a; color: #e0e0e0; border: 1px solid #1a1a1a; border-radius: 16px; flex-direction: column; z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden;">
-    
-    <!-- En-tête de l'application -->
-    <div style="background-color: #111111; padding: 16px; border-bottom: 1px solid #1a1a1a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block;"></span>
-            <span style="color: #ffffff;">IA Assistant — Zayd</span>
-        </div>
-        <button id="close-chat" style="background: none; border: none; color: #666; cursor: pointer; font-size: 18px;">✖</button>
-    </div>
-    
-    <!-- Zone de réception des messages avec barre de défilement -->
-    <div id="chat-messages">
-        <div style="background-color: #161616; color: #f0f0f0; padding: 10px 14px; border-radius: 12px; border-top-left-radius: 2px; align-self: flex-start; max-width: 80%; font-size: 14px; line-height: 1.4; border: 1px solid #222;">
-            Bonjour ! Je suis l'IA de Zayd. Posez-moi une question sur mes projets ou mon parcours de développeur ! 💻
-        </div>
-    </div>
-    
-    <!-- Zone de saisie et bouton de transmission -->
-    <div style="padding: 15px; background-color: #0a0a0a; border-top: 1px solid #1a1a1a; display: flex; gap: 8px; align-items: center;">
-        <input type="text" id="chat-input" placeholder="Écris ton message ici..." style="flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid #222; background-color: #161616; color: #ffffff; font-size: 14px; outline: none;">
-        <button id="send-chat" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">➔</button>
-    </div>
-</div>
- <!-- Main JavaScript -->
+  <!-- Fenêtre Principale de Dialogue (Masquée au démarrage) -->
+  <div id="chat-container" style="display: none; position: fixed; bottom: 175px; right: 25px; width: 360px; height: 480px; background-color: #0a0a0a; color: #e0e0e0; border: 1px solid #1a1a1a; border-radius: 16px; flex-direction: column; z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden;">
+      
+      <!-- En-tête de l'application -->
+      <div style="background-color: #111111; padding: 16px; border-bottom: 1px solid #1a1a1a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block;"></span>
+              <span style="color: #ffffff;">IA Assistant — Zayd</span>
+          </div>
+          <button id="close-chat" style="background: none; border: none; color: #666; cursor: pointer; font-size: 18px;">✖</button>
+      </div>
+      
+      <!-- Zone de réception des messages avec barre de défilement -->
+      <div id="chat-messages">
+          <div style="background-color: #161616; color: #f0f0f0; padding: 10px 14px; border-radius: 12px; border-top-left-radius: 2px; align-self: flex-start; max-width: 80%; font-size: 14px; line-height: 1.4; border: 1px solid #222;">
+              Bonjour ! Je suis l'IA de Zayd. Posez-moi une question sur mes projets ou mon parcours de développeur ! 💻
+          </div>
+      </div>
+      
+      <!-- Zone de saisie et bouton de transmission -->
+      <div style="padding: 15px; background-color: #0a0a0a; border-top: 1px solid #1a1a1a; display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="chat-input" placeholder="Écris ton message ici..." style="flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid #222; background-color: #161616; color: #ffffff; font-size: 14px; outline: none;">
+          <button id="send-chat" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">➔</button>
+      </div>
+  </div>
+
+  <!-- Ton fichier script principal avec version incrémentée anti-cache -->
   <script src="assets/js/main.js"></script>
+
 </body>
 
 </html>

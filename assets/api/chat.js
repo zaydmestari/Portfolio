@@ -1,10 +1,5 @@
 export default async function handler(req, res) {
-    // ➡️ AUTORISATION DIRECTE DE TON SITE GITHUB PAGES
-    res.setHeader('Access-Control-Allow-Origin', 'https://zaydmestari.github.io');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    // Gérer la requête de vérification du navigateur (Preflight)
+    // Si le navigateur fait juste une vérification (OPTIONS), on répond OK immédiatement
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
@@ -19,7 +14,7 @@ export default async function handler(req, res) {
         const apiKey = "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w";
         const url = `https://googleapis.com{apiKey}`;
 
-        const systemInstruction = "Tu es l'assistant officiel de Zayd El Mestari, 11 ans, élève en 6ème année primaire aux Écoles Riad à Casablanca. Tu réponds poliment et brièvement (2-3 sentences) sur ses passions (code HTML/CSS/JS, mathématiques) et son parcours.";
+        const systemInstruction = "Tu es l'assistant officiel de Zayd El Mestari, 11 ans, élève en 6ème année primaire aux Écoles Riad à Casablanca. Tu réponds poliment et brièvement (2-3 phrases) sur ses passions (code HTML/CSS/JS, mathématiques) et son parcours.";
 
         const response = await fetch(url, {
             method: 'POST',
@@ -45,3 +40,4 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "Erreur de connexion au serveur" });
     }
 }
+

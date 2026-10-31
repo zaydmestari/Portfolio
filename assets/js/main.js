@@ -229,22 +229,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return msgDiv.id;
     }
 
-        async function callGeminiAPI(userPrompt, loadingId) {
-        // L'URL exacte et complète écrite sans aucune variable ni coupure de texte
-        const url = "https://googleapis.com";
-
-        const requestBody = {
-            contents: [{
-                role: "user",
-                parts: [{ text: userPrompt }]
-            }]
-        };
-
+            async function callGeminiAPI(userPrompt, loadingId) {
         try {
-            const response = await fetch(url, {
+            // Le lien complet et parfait est mis DIRECTEMENT dans le fetch ci-dessous
+            const response = await fetch("https://googleapis.com", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify({
+                    contents: [{
+                        role: "user",
+                        parts: [{ text: userPrompt }]
+                    }]
+                })
             });
 
             const data = await response.json();
@@ -252,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+            if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                 const aiResponse = data.candidates[0].content.parts[0].text;
                 appendMessage(aiResponse, 'ai');
             } else if (data.error) {
@@ -269,4 +265,5 @@ document.addEventListener("DOMContentLoaded", () => {
             appendMessage("Erreur réseau lors du chargement de la réponse.", 'ai');
         }
     }
+
 });

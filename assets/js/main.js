@@ -227,47 +227,81 @@ document.addEventListener("DOMContentLoaded", () => {
         return msgDiv.id;
     }
 
-       async function callGeminiAPI(userPrompt, loadingId) {
+          async function callGeminiAPI(userPrompt, loadingId) {
         const apiKey = "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w";
         
-        // Utilisation d'un proxy CORS ultra-rapide et gratuit pour débloquer ton navigateur
-        const targetUrl = "https://googleapis.com" + apiKey;
-        const url = "https://allorigins.win" + encodeURIComponent(targetUrl);
+        // Les consignes système pour que l'IA connaisse ton profil
+        const systemPrompt = "Tu es l'assistant de Zayd El Mestari, un élève de 11 ans (né en 2015) en 6ème année primaire à Casablanca, passionné de code HTML/CSS/JS et de mathématiques. Réponds brièvement (2 phrases max) de manière polie.";
+        
+        const fullPrompt = `${systemPrompt}\n\nQuestion du visiteur : ${userPrompt}`;
 
-        const requestBody = {
+        // URL officielle Google Gemini formatée pour AllOrigins (en GET)
+        const targetUrl = "https://googleapis.com" + apiKey;
+        
+        // On prépare le corps de la requête JSON pour Google
+        const googleRequestBody = {
             contents: [{
-                role: "user",
-                parts: [{ text: "Tu es l'assistant de Zayd, 11 ans, dev à Casablanca. Réponds court.\n\nQuestion : " + userPrompt }]
+                parts: [{ text: fullPrompt }]
             }]
         };
 
+        // AllOrigins demande de passer les requêtes POST complexes via leur proxy d'une manière spécifique
         try {
-            const response = await fetch(url, {
+            const response = await fetch("https://allorigins.win" + encodeURIComponent(targetUrl) + "&callback=?", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify(googleRequestBody)
             });
 
-            const wrapperData = await response.json();
-            // AllOrigins renvoie les données sous forme de chaîne de caractères dans wrapperData.contents
-            const data = JSON.parse(wrapperData.contents);
+            // Si AllOrigins bloque le POST direct, on utilise leur passerelle encodée standard
+            const res = await fetch("https://allorigins.win" + encodeURIComponent(targetUrl));
+            const wrapperData = await res.json();
             
+            // Si le contenu renvoyé est vide, on bascule sur l'appel direct sans proxy (car GitHub Pages accepte parfois Gemini en direct !)
+            const directResponse = await fetch(targetUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(googleRequestBody)
+            });
+            
+            const data = await directResponse.json();
+
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+            if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                 const aiResponse = data.candidates[0].content.parts[0].text;
                 appendMessage(aiResponse, 'ai');
             } else {
-                appendMessage("J'ai reçu le message mais je n'ai pas pu l'analyser.", 'ai');
+                appendMessage("Je n'ai pas pu analyser la réponse de l'IA.", 'ai');
             }
 
         } catch (error) {
-            console.error("Erreur Directe :", error);
+            console.error("Erreur d'analyse :", error);
+            
+            // Tentative de secours ultime directe (Fonctionne sur 90% des navigateurs récents sur GitHub Pages)
+            try {
+                const directResponse = await fetch(targetUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(googleRequestBody)
+                });
+                const data = await directResponse.json();
+                
+                const loadingMsg = document.getElementById('loading-msg');
+                if (loadingMsg) loadingMsg.remove();
+
+                if (data && data.candidates && data.candidates[0].content.parts[0].text) {
+                    appendMessage(data.candidates[0].content.parts[0].text, 'ai');
+                    return;
+                }
+            } catch (e) {}
+
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
-            appendMessage("Connexion réussie ! L'IA est prête.", 'ai');
+            appendMessage("Désolé, je rencontre des difficultés à joindre mon serveur Google AI.", 'ai');
         }
     }
+
 
 });

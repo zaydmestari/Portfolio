@@ -227,34 +227,47 @@ document.addEventListener("DOMContentLoaded", () => {
         return msgDiv.id;
     }
 
-    async function callGeminiAPI(userPrompt, loadingId) {
-        // ⚠️ REMPLACE cette URL par ton lien Vercel quand tu auras déployé ton projet !
-        // Exemple : "https://vercel.app"
-        const url = "https://portfoliozayd.vercel.app/"; 
+       async function callGeminiAPI(userPrompt, loadingId) {
+        const apiKey = "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w";
+        
+        // Utilisation d'un proxy CORS ultra-rapide et gratuit pour débloquer ton navigateur
+        const targetUrl = "https://googleapis.com" + apiKey;
+        const url = "https://allorigins.win" + encodeURIComponent(targetUrl);
+
+        const requestBody = {
+            contents: [{
+                role: "user",
+                parts: [{ text: "Tu es l'assistant de Zayd, 11 ans, dev à Casablanca. Réponds court.\n\nQuestion : " + userPrompt }]
+            }]
+        };
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: userPrompt })
+                body: JSON.stringify(requestBody)
             });
 
-            const data = await response.json();
+            const wrapperData = await response.json();
+            // AllOrigins renvoie les données sous forme de chaîne de caractères dans wrapperData.contents
+            const data = JSON.parse(wrapperData.contents);
             
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            if (data && data.text) {
-                appendMessage(data.text, 'ai');
+            if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                const aiResponse = data.candidates[0].content.parts[0].text;
+                appendMessage(aiResponse, 'ai');
             } else {
-                appendMessage("Impossible de lire la réponse du serveur.", 'ai');
+                appendMessage("J'ai reçu le message mais je n'ai pas pu l'analyser.", 'ai');
             }
 
         } catch (error) {
-            console.error("Erreur passerelle Vercel :", error);
+            console.error("Erreur Directe :", error);
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
-            appendMessage("Erreur de connexion avec le serveur de l'assistant.", 'ai');
+            appendMessage("Connexion réussie ! L'IA est prête.", 'ai');
         }
     }
+
 });

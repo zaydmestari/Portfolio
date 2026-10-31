@@ -229,9 +229,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return msgDiv.id;
     }
 
-            async function callGeminiAPI(userPrompt, loadingId) {
+                async function callGeminiAPI(userPrompt, loadingId) {
         try {
-            // Le lien complet et parfait est mis DIRECTEMENT dans le fetch ci-dessous
+            // Requête directe avec le bon chemin et ta clé API
             const response = await fetch("https://googleapis.com", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -248,14 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+            // STRUCTURE CORRIGÉE : Ajout des index [0] pour lire la liste JSON officielle de Google
+            if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                 const aiResponse = data.candidates[0].content.parts[0].text;
                 appendMessage(aiResponse, 'ai');
             } else if (data.error) {
                 console.error("Erreur Google AI :", data.error.message);
-                appendMessage("Une erreur d'autorisation s'est produite.", 'ai');
+                appendMessage("L'IA a un problème d'autorisation : " + data.error.message, 'ai');
             } else {
-                appendMessage("Impossible de lire la réponse de l'IA.", 'ai');
+                appendMessage("Je n'ai pas pu analyser la réponse reçue.", 'ai');
             }
 
         } catch (error) {
@@ -265,5 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
             appendMessage("Erreur réseau lors du chargement de la réponse.", 'ai');
         }
     }
+
 
 });

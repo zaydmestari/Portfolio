@@ -148,60 +148,63 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 }
 // ========================================================
-// INTEGRATION DU CHATBOT IA GEMINI (VERSION VERCEL)
+// LOGIQUE DU CHATBOT ULTRA-SOMBRE SANS BOUTON ENVOYER
 // ========================================================
 document.addEventListener("DOMContentLoaded", () => {
     const chatBubble = document.getElementById('chat-bubble');
     const chatContainer = document.getElementById('chat-container');
     const closeChat = document.getElementById('close-chat');
     const chatInput = document.getElementById('chat-input');
-    const sendChat = document.getElementById('send-chat');
     const chatMessages = document.getElementById('chat-messages');
 
-    console.log("Chatbot Zayd initialisé avec succès !");
-
+    // Gestion de l'affichage de la boîte au clic
     if (chatBubble && chatContainer && closeChat) {
         chatBubble.addEventListener('click', (e) => {
             e.preventDefault();
-            chatContainer.classList.toggle('chat-open');
+            chatContainer.classList.toggle('active');
         });
 
         closeChat.addEventListener('click', (e) => {
             e.preventDefault();
-            chatContainer.classList.remove('chat-open');
+            chatContainer.classList.remove('active');
         });
     }
 
-    if (sendChat && chatInput) {
-        sendChat.addEventListener('click', handleUserMessage);
+    // Capture de la touche Entrée pour l'envoi instantané
+    if (chatInput) {
         chatInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                handleUserMessage();
+                processMessage(chatInput.value);
+                chatInput.value = '';
             }
         });
     }
 
-    function handleUserMessage() {
-        const messageText = chatInput.value.trim();
+    // Gestion des suggestions de questions courantes
+    window.sendSuggestion = function(text) {
+        processMessage(text);
+    };
+
+    function processMessage(text) {
+        const messageText = text.trim();
         if (!messageText) return;
 
         appendMessage(messageText, 'user');
-        chatInput.value = '';
+        const loadingId = appendMessage("L'IA analyse ta question...", 'ai-loading');
 
-        const loadingId = appendMessage("L'IA réfléchit...", 'ai-loading');
-        callGeminiAPI(messageText, loadingId);
+        callVercelGateway(messageText, loadingId);
     }
 
     function appendMessage(text, sender) {
         const msgDiv = document.createElement('div');
         msgDiv.innerText = text;
-        msgDiv.style.padding = "10px 14px";
-        msgDiv.style.borderRadius = "12px";
+        msgDiv.style.padding = "11px 15px";
+        msgDiv.style.borderRadius = "14px";
         msgDiv.style.maxWidth = "80%";
         msgDiv.style.wordBreak = "break-word";
-        msgDiv.style.fontSize = "14px";
-        msgDiv.style.lineHeight = "1.4";
+        msgDiv.style.fontSize = "13.5px";
+        msgDiv.style.lineHeight = "1.45";
 
         if (sender === 'user') {
             msgDiv.style.backgroundColor = "#007bff";
@@ -209,11 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
             msgDiv.style.alignSelf = "flex-end";
             msgDiv.style.borderTopRightRadius = "2px";
         } else {
-            msgDiv.style.backgroundColor = "#161616";
-            msgDiv.style.color = "#f0f0f0";
+            msgDiv.style.backgroundColor = "#121212";
+            msgDiv.style.color = "#e0e0e0";
             msgDiv.style.alignSelf = "flex-start";
             msgDiv.style.borderTopLeftRadius = "2px";
-            msgDiv.style.border = "1px solid #222";
+            msgDiv.style.border = "1px solid #1c1c1c";
         }
 
         if (sender === 'ai-loading') {
@@ -227,81 +230,30 @@ document.addEventListener("DOMContentLoaded", () => {
         return msgDiv.id;
     }
 
-          async function callGeminiAPI(userPrompt, loadingId) {
-        const apiKey = "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w";
-        
-        // Les consignes système pour que l'IA connaisse ton profil
-        const systemPrompt = "Tu es l'assistant de Zayd El Mestari, un élève de 11 ans (né en 2015) en 6ème année primaire à Casablanca, passionné de code HTML/CSS/JS et de mathématiques. Réponds brièvement (2 phrases max) de manière polie.";
-        
-        const fullPrompt = `${systemPrompt}\n\nQuestion du visiteur : ${userPrompt}`;
-
-        // URL officielle Google Gemini formatée pour AllOrigins (en GET)
-        const targetUrl = "https://googleapis.com" + apiKey;
-        
-        // On prépare le corps de la requête JSON pour Google
-        const googleRequestBody = {
-            contents: [{
-                parts: [{ text: fullPrompt }]
-            }]
-        };
-
-        // AllOrigins demande de passer les requêtes POST complexes via leur proxy d'une manière spécifique
+    async function callVercelGateway(userPrompt, loadingId) {
+        // ➡️ LIEN VERCEL EXACT ET REFAIT POUR TON PROJET
+        const url = "portfoliozayd.vercel.app"
         try {
-            const response = await fetch("https://allorigins.win" + encodeURIComponent(targetUrl) + "&callback=?", {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(googleRequestBody)
+                body: JSON.stringify({ prompt: userPrompt })
             });
 
-            // Si AllOrigins bloque le POST direct, on utilise leur passerelle encodée standard
-            const res = await fetch("https://allorigins.win" + encodeURIComponent(targetUrl));
-            const wrapperData = await res.json();
-            
-            // Si le contenu renvoyé est vide, on bascule sur l'appel direct sans proxy (car GitHub Pages accepte parfois Gemini en direct !)
-            const directResponse = await fetch(targetUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(googleRequestBody)
-            });
-            
-            const data = await directResponse.json();
-
+            const data = await response.json();
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-                const aiResponse = data.candidates[0].content.parts[0].text;
-                appendMessage(aiResponse, 'ai');
+            if (data && data.text) {
+                appendMessage(data.text, 'ai');
             } else {
-                appendMessage("Je n'ai pas pu analyser la réponse de l'IA.", 'ai');
+                appendMessage("Le serveur sécurisé n'a pas retourné de réponse compréhensible.", 'ai');
             }
-
         } catch (error) {
-            console.error("Erreur d'analyse :", error);
-            
-            // Tentative de secours ultime directe (Fonctionne sur 90% des navigateurs récents sur GitHub Pages)
-            try {
-                const directResponse = await fetch(targetUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(googleRequestBody)
-                });
-                const data = await directResponse.json();
-                
-                const loadingMsg = document.getElementById('loading-msg');
-                if (loadingMsg) loadingMsg.remove();
-
-                if (data && data.candidates && data.candidates[0].content.parts[0].text) {
-                    appendMessage(data.candidates[0].content.parts[0].text, 'ai');
-                    return;
-                }
-            } catch (e) {}
-
+            console.error("Erreur d'appel API :", error);
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
-            appendMessage("L'IA ne répond pas.", 'ai');
+            appendMessage("Désolé, impossible de se connecter à la passerelle de l'assistant.", 'ai');
         }
     }
-
-
 });

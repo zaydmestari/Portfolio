@@ -253,39 +253,132 @@
 
   <!-- Back to top button -->
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-  
-  <!-- ======================================================== -->
-  <!-- INTERFACE DU CHATBOT IA GEMINI (VERSION SÉCURISÉE)       -->
-  <!-- ======================================================== -->
 
-  <!-- Bulle Flottante du Chatbot (Placée pour ne pas bloquer ton bouton scroll) -->
-  <button id="chat-bubble" style="position: fixed; bottom: 100px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; font-size: 26px; cursor: pointer; z-index: 1000; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);">💬</button>
+  <!-- ... Tout le reste de ton portfolio (sections, propos, compétences) ... -->
 
-  <!-- Fenêtre Principale de Dialogue (Masquée au démarrage) -->
-  <div id="chat-container" style="display: none; position: fixed; bottom: 175px; right: 25px; width: 360px; height: 480px; background-color: #0a0a0a; color: #e0e0e0; border: 1px solid #1a1a1a; border-radius: 16px; flex-direction: column; z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.8); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden;">
-      
-      <!-- En-tête de l'application -->
-      <div style="background-color: #111111; padding: 16px; border-bottom: 1px solid #1a1a1a; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block;"></span>
-              <span style="color: #ffffff;">IA Assistant — Zayd</span>
-          </div>
-          <button id="close-chat" style="background: none; border: none; color: #666; cursor: pointer; font-size: 18px;">✖</button>
-      </div>
-      
-      <!-- Zone de réception des messages avec barre de défilement -->
-      <div id="chat-messages">
-          <div style="background-color: #161616; color: #f0f0f0; padding: 10px 14px; border-radius: 12px; border-top-left-radius: 2px; align-self: flex-start; max-width: 80%; font-size: 14px; line-height: 1.4; border: 1px solid #222;">
-              Bonjour ! Je suis l'IA de Zayd. Posez-moi une question sur mes projets ou mon parcours de développeur ! 💻
-          </div>
-      </div>
-      
-      <!-- Zone de saisie et bouton de transmission -->
-      <div style="padding: 15px; background-color: #0a0a0a; border-top: 1px solid #1a1a1a; display: flex; gap: 8px; align-items: center;">
-          <input type="text" id="chat-input" placeholder="Écris ton message ici..." style="flex: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid #222; background-color: #161616; color: #ffffff; font-size: 14px; outline: none;">
-          <button id="send-chat" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">➔</button>
-      </div>
-  </div>
+    <!-- ======================================================== -->
+    <!-- INTERFACE PREMIUM DU CHATBOT ULTRA-SOMBRE                -->
+    <!-- ======================================================== -->
+    
+    <!-- Styles CSS pour l'interface Ultra-Sombre et Fluide -->
+    <style>
+    @keyframes chatOpenAnim {
+        from { opacity: 0; transform: translateY(30px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes pulseGreen {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .chat-window {
+        display: none;
+        position: fixed;
+        bottom: 100px;
+        right: 25px;
+        width: 360px;
+        height: 520px;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(10px);
+        color: #e0e0e0;
+        border: 1px solid #1a1a1a;
+        border-radius: 20px;
+        flex-direction: column;
+        z-index: 1000;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.9);
+        font-family: 'Segoe UI', Roboto, sans-serif;
+        overflow: hidden;
+    }
+    .chat-window.active {
+        display: flex !important;
+        animation: chatOpenAnim 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    #chat-bubble {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #0f0f0f;
+        color: #ffffff;
+        border: 1px solid #222;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1000;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #chat-bubble:hover {
+        transform: scale(1.08) translateY(-2px);
+        background: #161616;
+        border-color: #007bff;
+        box-shadow: 0 12px 30px rgba(0, 123, 255, 0.2);
+    }
+    #chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background-color: #050505;
+    }
+    .quick-questions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 20px;
+        background-color: #050505;
+        border-top: 1px solid #121212;
+    }
+    .suggestion-btn {
+        background: #121212;
+        color: #aaaaaa;
+        border: 1px solid #222;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .suggestion-btn:hover {
+        background: #1c1c1c;
+        color: #ffffff;
+        border-color: #333;
+    }
+    </style>
+
+    <!-- Bouton Bulle -->
+    <button id="chat-bubble">💬</button>
+
+    <!-- Fenêtre Principale -->
+    <div id="chat-container" class="chat-window">
+        <div style="background-color: #0f0f0f; padding: 18px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block; animation: pulseGreen 2s infinite;"></span>
+                <span style="font-weight: 600; font-size: 14px; letter-spacing: 0.5px; color: #ffffff;">Zayd AI Assistant</span>
+            </div>
+            <button id="close-chat" style="background: none; border: none; color: #555; cursor: pointer; font-size: 16px;">✖</button>
+        </div>
+        
+        <div id="chat-messages">
+            <div style="background-color: #121212; color: #e0e0e0; padding: 12px 16px; border-radius: 14px; border-top-left-radius: 2px; align-self: flex-start; max-width: 80%; font-size: 13.5px; line-height: 1.45; border: 1px solid #1c1c1c;">
+                Salut ! Je suis l'IA de Zayd. Pose-moi tes questions ou clique sur une suggestion ci-dessous. 💻
+            </div>
+        </div>
+
+        <div class="quick-questions">
+            <button class="suggestion-btn" onclick="sendSuggestion('Qui est Zayd ?')">Who is Zayd?</button>
+            <button class="suggestion-btn" onclick="sendSuggestion('Quels sont tes projets ?')">Projets 🛠️</button>
+            <button class="suggestion-btn" onclick="sendSuggestion('Quelles sont tes compétences ?')">Compétences 💻</button>
+        </div>
+        
+        <div style="padding: 15px; background-color: #0f0f0f; border-top: 1px solid #1a1a1a; display: flex;">
+            <input type="text" id="chat-input" placeholder="Écris ton message et appuie sur Entrée...">
 
   <!-- Ton fichier script principal avec version incrémentée anti-cache -->
   <script src="assets/js/main.js"></script>

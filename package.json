@@ -1,0 +1,10 @@
+{
+  "name": "portfolio-zayd-api",
+  "version": "1.0.0",
+  "description": "API Gateway pour Gemini",
+  "main": "api/chat.js",
+  "type": "module",
+  "scripts": {
+    "start": "node api/chat.js"
+  }
+}

@@ -229,9 +229,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return msgDiv.id;
     }
 
-    async function callGeminiAPI(userPrompt, loadingId) {
-        // CORRECTION : L'adresse URL est maintenant complète vers Google
-        const url = "https://googleapis.com" + apiKey;
+        async function callGeminiAPI(userPrompt, loadingId) {
+        // L'URL exacte et complète écrite sans aucune variable ni coupure de texte
+        const url = "https://googleapis.com";
 
         const requestBody = {
             contents: [{
@@ -252,8 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const loadingMsg = document.getElementById('loading-msg');
             if (loadingMsg) loadingMsg.remove();
 
-            // CORRECTION : Structure de lecture de l'arbre JSON propre à Gemini 2.5
-            if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+            if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                 const aiResponse = data.candidates[0].content.parts[0].text;
                 appendMessage(aiResponse, 'ai');
             } else if (data.error) {

@@ -147,3 +147,120 @@ if (typeof module !== 'undefined' && module.exports) {
     setupProgressBars
   };
 }
+import { GoogleGenAI } from "@google/generative-ai";
+
+document.addEventListener("DOMContentLoaded", () => {
+    
+    const chatBubble = document.getElementById('chat-bubble');
+    const chatContainer = document.getElementById('chat-container');
+    const closeChat = document.getElementById('close-chat');
+    const chatInput = document.getElementById('chat-input');
+    const sendChat = document.getElementById('send-chat');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Initialisation officielle avec ta clé
+    const ai = new GoogleGenAI({ apiKey: "AIzaSyAQ.Ab8RN6KB_hZYcANmnyRYeLlCyrSFlc2mbppRqpaP8a6G0Bu0_w" });
+
+    console.log("Chatbot Zayd configuré avec le module officiel !");
+
+    if (chatBubble && chatContainer && closeChat) {
+        chatBubble.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
+                chatContainer.style.display = 'flex';
+                chatContainer.style.animation = 'chatFadeIn 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards';
+            } else {
+                chatContainer.style.display = 'none';
+            }
+        });
+
+        closeChat.addEventListener('click', (e) => {
+            e.preventDefault();
+            chatContainer.style.display = 'none';
+        });
+    }
+
+    if (sendChat && chatInput) {
+        sendChat.addEventListener('click', handleUserMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleUserMessage();
+            }
+        });
+    }
+
+    function handleUserMessage() {
+        const messageText = chatInput.value.trim();
+        if (!messageText) return;
+
+        appendMessage(messageText, 'user');
+        chatInput.value = '';
+
+        const loadingId = appendMessage("L'IA réfléchit...", 'ai-loading');
+        callGeminiAPI(messageText, loadingId);
+    }
+
+    function appendMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.innerText = text;
+        msgDiv.style.padding = "10px 14px";
+        msgDiv.style.borderRadius = "12px";
+        msgDiv.style.maxWidth = "80%";
+        msgDiv.style.wordBreak = "break-word";
+        msgDiv.style.fontSize = "14px";
+        msgDiv.style.lineHeight = "1.4";
+
+        if (sender === 'user') {
+            msgDiv.style.backgroundColor = "#007bff";
+            msgDiv.style.color = "white";
+            msgDiv.style.alignSelf = "flex-end";
+            msgDiv.style.borderTopRightRadius = "2px";
+        } else {
+            msgDiv.style.backgroundColor = "#161616";
+            msgDiv.style.color = "#f0f0f0";
+            msgDiv.style.alignSelf = "flex-start";
+            msgDiv.style.borderTopLeftRadius = "2px";
+            msgDiv.style.border = "1px solid #222";
+        }
+
+        if (sender === 'ai-loading') {
+            msgDiv.id = 'loading-msg';
+            msgDiv.style.fontStyle = 'italic';
+            msgDiv.style.opacity = '0.5';
+        }
+
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return msgDiv.id;
+    }
+
+    async function callGeminiAPI(userPrompt, loadingId) {
+        try {
+            // Appel direct via la méthode officielle du SDK de Google
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: userPrompt,
+            });
+
+            const loadingMsg = document.getElementById('loading-msg');
+            if (loadingMsg) loadingMsg.remove();
+
+            if (response && response.text) {
+                appendMessage(response.text, 'ai');
+            } else {
+                appendMessage("Je n'ai pas pu obtenir de réponse textuelle.", 'ai');
+            }
+
+        } catch (error) {
+            console.error("Erreur SDK Gemini :", error);
+            const loadingMsg = document.getElementById('loading-msg');
+            if (loadingMsg) loadingMsg.remove();
+            appendMessage("Une erreur réseau est survenue avec l'assistant.", 'ai');
+        }
+    }
+});
+
+
+
+

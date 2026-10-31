@@ -1,20 +1,10 @@
 export default async function handler(req, res) {
-    // 1. Forcer IMMÉDIATEMENT les en-têtes CORS pour toutes les requêtes (y compris OPTIONS)
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Origin', 'https://zaydmestari.github.io');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Content-Type');
-
-    // 2. Traiter la requête préliminaire (Preflight) avec un code HTTP 200 (OK) obligatoire
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
-    // 3. Bloquer si ce n'est pas du POST après avoir validé OPTIONS
     if (req.method !== 'POST') {
-        res.status(405).json({ error: "Méthode non autorisée" });
-        return;
+        return res.status(405).json({ error: "Méthode non autorisée" });
     }
 
     try {
@@ -37,16 +27,17 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        if (data && data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+        if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
             const aiResponse = data.candidates[0].content.parts[0].text;
-            res.status(200).json({ text: aiResponse });
+            return res.status(200).json({ text: aiResponse });
         } else {
-            res.status(500).json({ error: "Erreur de lecture de la réponse Google" });
+            return res.status(500).json({ error: "Erreur de lecture de la réponse Google" });
         }
     } catch (error) {
-        res.status(500).json({ error: "Erreur interne du serveur" });
+        return res.status(500).json({ error: "Erreur interne du serveur" });
     }
 }
+
 
 
 

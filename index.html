@@ -22,29 +22,172 @@
   <!-- Main CSS -->
   <link href="assets/css/style.css" rel="stylesheet">
    <style>
-        /* Animation d'ouverture fluide pour le chatbot */
-        @keyframes chatFadeIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
+/* --- ANIMATIONS ULTRA-FLUIDES & EFFET GEMINI --- */
+@keyframes zaydPopIn {
+    0% { opacity: 0; transform: translateY(30px) scale(0.92); filter: blur(10px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
 
-        /* Classe activée par le JavaScript pour afficher le chat */
-        .chat-open {
-            display: flex !important;
-            animation: chatFadeIn 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
+@keyframes geminiBorderSpin {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        /* Défilement fluide de la zone interne des messages */
-        #chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto !important;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background-color: #020202;
-        }
-    </style>
+@keyframes bubbleFloat {
+    0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3); }
+    50% { transform: translateY(-6px) scale(1.05); box-shadow: 0 15px 40px rgba(138, 43, 226, 0.5); }
+}
+
+/* Fenêtre du chatbot ultra-stylée "Néant" & Glassmorphism */
+.zayd-chat-box {
+    display: none;
+    position: fixed;
+    bottom: 30px; 
+    left: 25px;
+    width: 400px;
+    height: 580px;
+    background: rgba(3, 3, 3, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    flex-direction: column;
+    z-index: 99999;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(138, 43, 226, 0.05);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    transform-origin: bottom left;
+}
+
+.zayd-chat-box.active {
+    display: flex !important;
+    animation: zaydPopIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* En-tête déplaçable avec effet néon subtil */
+.zayd-chat-header {
+    background: linear-gradient(135deg, #0a0a0a, #121212);
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+}
+
+/* Bouton Bulle 💬 en bas à gauche avec animation de lévitation et lueur */
+#chat-bubble {
+    position: fixed;
+    bottom: 30px; 
+    left: 25px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #1a1a1a, #000000);
+    color: #ffffff;
+    border: 1px solid rgba(138, 43, 226, 0.4);
+    font-size: 26px;
+    cursor: pointer;
+    z-index: 99999;
+    animation: bubbleFloat 4s infinite ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#chat-bubble:hover {
+    transform: scale(1.12) translateY(-4px);
+    border-color: #007bff;
+    box-shadow: 0 0 35px rgba(0, 123, 255, 0.6), 0 0 20px rgba(138, 43, 226, 0.6);
+}
+
+/* Zone des messages */
+#chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #000000;
+    scroll-behavior: smooth;
+}
+
+/* Bulles animées à l'apparition */
+@keyframes messageSlide {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.zayd-bubble {
+    padding: 14px 18px;
+    border-radius: 16px;
+    max-width: 82%;
+    word-break: break-word;
+    font-size: 13.5px;
+    line-height: 1.6;
+    animation: messageSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.zayd-bubble.user {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #ffffff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+}
+
+.zayd-bubble.ai {
+    background: #0c0c0e;
+    color: #e2e8f0;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* --- LE CADRE LUMINEUX BLEU / VIOLET TOURNANT (STYLE GEMINI) --- */
+.zayd-input-wrapper {
+    padding: 16px;
+    background: #050505;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.zayd-glow-container {
+    position: relative;
+    border-radius: 25px;
+    padding: 2px; /* Épaisseur de la bordure lumineuse */
+    background: linear-gradient(60deg, #007bff, #8a2be2, #ff007f, #007bff);
+    background-size: 300% 300%;
+    animation: geminiBorderSpin 6s linear infinite;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+.zayd-glow-container:focus-within {
+    box-shadow: 0 0 25px rgba(0, 123, 255, 0.6), 0 0 25px rgba(138, 43, 226, 0.6);
+}
+
+#chat-input {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 23px;
+    border: none;
+    background: #08080a;
+    color: #ffffff;
+    font-size: 13.5px;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+#chat-input::placeholder {
+    color: #666;
+}
+</style>
 </head>
 
 <body>
@@ -256,143 +399,34 @@
 
   <!-- ... Tout le reste de ton portfolio (sections, propos, compétences) ... -->
 
-    <!-- ======================================================== -->
-    <!-- INTERFACE PREMIUM DU CHATBOT ULTRA-SOMBRE (CORRIGÉE)     -->
-    <!-- ======================================================== -->
+  <!-- Bouton Bulle de Discussion 💬 (En bas à gauche) -->
+<button id="chat-bubble" aria-label="Ouvrir le chat">💬</button>
+
+<!-- Fenêtre du Chatbot (Déplaçable & Ultra-stylée) -->
+<div id="chat-container" class="zayd-chat-box">
+    <div class="zayd-chat-header" id="chat-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 9px; height: 9px; background-color: #28a745; border-radius: 50%; box-shadow: 0 0 10px #28a745;"></div>
+            <span style="font-weight: 600; font-size: 14px; color: #ffffff; letter-spacing: 0.5px;">Zayd AI Assistant</span>
+        </div>
+        <button id="close-chat" style="background: none; border: none; color: #888; cursor: pointer; font-size: 16px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">✕</button>
+    </div>
     
-    <style>
-    /* Animation d'ouverture fluide */
-    @keyframes chatOpenAnim {
-        from { opacity: 0; transform: translateY(30px) scale(0.95); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes pulseGreen {
-        0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.2); opacity: 0.5; }
-        100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Fenêtre principale remontée pour s'ouvrir au-dessus de la bulle */
-    .chat-window {
-        display: none;
-        position: fixed;
-        bottom: 175px; 
-        right: 25px;
-        width: 360px;
-        height: 520px;
-        background: rgba(10, 10, 10, 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        color: #e0e0e0;
-        border: 1px solid #1a1a1a;
-        border-radius: 20px;
-        flex-direction: column;
-        z-index: 1000;
-        box-shadow: 0 15px 50px rgba(0,0,0,0.9);
-        font-family: 'Segoe UI', Roboto, sans-serif;
-        overflow: hidden;
-    }
-    .chat-window.active {
-        display: flex !important;
-        animation: chatOpenAnim 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    /* Bulle du chatbot remontée à bottom: 100px pour ÉVITER LA COLLISION avec le bouton scroll */
-    #chat-bubble {
-        position: fixed;
-        bottom: 100px; 
-        right: 25px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: #0f0f0f;
-        color: #ffffff;
-        border: 1px solid #222;
-        font-size: 24px;
-        cursor: pointer;
-        z-index: 1000;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    #chat-bubble:hover {
-        transform: scale(1.08) translateY(-2px);
-        background: #161616;
-        border-color: #007bff;
-        box-shadow: 0 12px 30px rgba(0, 123, 255, 0.2);
-    }
-
-    /* Zone interne des messages */
-    #chat-messages {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        background-color: #050505;
-    }
-
-    /* Bloc des questions fréquentes cliquables */
-    .quick-questions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 12px 20px;
-        background-color: #050505;
-        border-top: 1px solid #121212;
-    }
-    .suggestion-btn {
-        background: #121212;
-        color: #aaaaaa;
-        border: 1px solid #222;
-        padding: 6px 12px;
-        border-radius: 16px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    .suggestion-btn:hover {
-        background: #1c1c1c;
-        color: #ffffff;
-        border-color: #333;
-    }
-    </style>
-
-    <!-- Élément HTML : Bouton Bulle (Placé au-dessus du bouton scroll) -->
-    <button id="chat-bubble">💬</button>
-
-    <!-- Élément HTML : Fenêtre du Chatbot -->
-    <div id="chat-container" class="chat-window">
-        <!-- Header de l'interface -->
-        <div style="background-color: #0f0f0f; padding: 18px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block; animation: pulseGreen 2s infinite;"></span>
-                <span style="font-weight: 600; font-size: 14px; letter-spacing: 0.5px; color: #ffffff;">Zayd AI Assistant</span>
-            </div>
-            <button id="close-chat" style="background: none; border: none; color: #555; cursor: pointer; font-size: 16px;">✖</button>
+    <div id="chat-messages">
+        <div class="zayd-bubble ai">
+            <div class="zayd-bubble ai">
+    Bienvenue sur le portfolio de Zayd El Mestari ! 👋 Je suis son assistant virtuel. Pose-moi n'importe quelle question sur ses projets, son parcours ou ses compétences 🚀.
+</div>
         </div>
-        
-        <!-- Zone des discussions -->
-        <div id="chat-messages">
-            <div style="background-color: #121212; color: #e0e0e0; padding: 12px 16px; border-radius: 14px; border-top-left-radius: 2px; align-self: flex-start; max-width: 80%; font-size: 13.5px; line-height: 1.45; border: 1px solid #1c1c1c;">
-                Salut ! Je suis l'IA de Zayd. Pose-moi tes questions ou clique sur une suggestion ci-dessous. 💻
-            </div>
+    </div>
+    
+    <!-- Zone de saisie avec le cadre magique bleu/violet tournant -->
+    <div class="zayd-input-wrapper">
+        <div class="zayd-glow-container">
+            <input type="text" id="chat-input" placeholder="Écris ton message magique ici...">
         </div>
-
-        <!-- Boutons de questions suggérées -->
-        <div class="quick-questions">
-            <button class="suggestion-btn" onclick="sendSuggestion('Qui est Zayd ?')">Who is Zayd?</button>
-            <button class="suggestion-btn" onclick="sendSuggestion('Quels sont tes projets ?')">Projets 🛠️</button>
-            <button class="suggestion-btn" onclick="sendSuggestion('Quelles sont tes compétences ?')">Compétences 💻</button>
-        </div>
-        
-        <!-- Zone de saisie corrigée (Épurée, sans bordure blanche double, sans contour lors du clic) -->
-        <div style="padding: 15px; background-color: #0f0f0f; border-top: 1px solid #1a1a1a; display: flex;">
-            <input type="text" id="chat-input" placeholder="Écris ton message et appuie sur Entrée..." style="flex: 1; padding: 12px 18px; border-radius: 24px; border: 1px solid #222; background-color: #121212; color: #ffffff; font-size: 13.5px; outline: none; box-sizing: border-box; transition: all 0.2s ease;">
-        </div>
+    </div>
+</div>
         
   <!-- Ton fichier script principal avec version incrémentée anti-cache -->
   <script src="assets/js/main.js"></script>

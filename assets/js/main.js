@@ -97,15 +97,15 @@
             });
         }
 
-        // Fenêtre déplaçable (Drag & Drop fluide)
-        if (chatHeader) {
+        // --- DÉPLACEMENT (PC + MOBILE TACTILE) ---
+        if (chatHeader && chatContainer) {
             let isDragging = false;
             let startX, startY, initialX, initialY;
 
-            chatHeader.addEventListener('mousedown', (e) => {
+            function startDrag(clientX, clientY) {
                 isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
+                startX = clientX;
+                startY = clientY;
                 const rect = chatContainer.getBoundingClientRect();
                 initialX = rect.left;
                 initialY = rect.top;
@@ -114,24 +114,41 @@
                 chatContainer.style.right = 'auto';
                 chatContainer.style.left = initialX + 'px';
                 chatContainer.style.top = initialY + 'px';
+            }
 
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
-
-            function onMouseMove(e) {
+            function onDrag(clientX, clientY) {
                 if (!isDragging) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                const dx = clientX - startX;
+                const dy = clientY - startY;
                 chatContainer.style.left = (initialX + dx) + 'px';
                 chatContainer.style.top = (initialY + dy) + 'px';
             }
 
+            function stopDrag() { isDragging = false; }
+
+            // Souris (PC)
+            chatHeader.addEventListener('mousedown', (e) => {
+                startDrag(e.clientX, e.clientY);
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+            function onMouseMove(e) { onDrag(e.clientX, e.clientY); }
             function onMouseUp() {
-                isDragging = false;
+                stopDrag();
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
             }
+
+            // Tactile (Smartphones & Tablettes)
+            chatHeader.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+
+            chatHeader.addEventListener('touchmove', (e) => {
+                if (isDragging && e.touches.length === 1) onDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+
+            chatHeader.addEventListener('touchend', stopDrag);
         }
 
         // Envoi du message avec la touche Entrée
@@ -191,87 +208,152 @@
             }
         }
 
-        // --- BASE DE SECOURS ULTRA-MASSIVE (+400 CONDITIONS & VARIANTES) ---
+        // --- MOTEUR GETSMART : BASE DE SECOURS LOCALE ET SÉMANTIQUE ---
         function getSmartUniversalFallback(prompt, targetElement) {
             const q = prompt.toLowerCase();
+            
+            const database = [
+                // 1. Identité, Âge & Localisation de Zayd
+                { 
+                    keys: ['qui est zayd', 'c\'est qui zayd', 'zayd el mestari', 'qui es tu zayd', 'présente zayd', 'parle moi de zayd', 'dis m\'en plus sur zayd', 'c\'est qui'], 
+                    ans: "Zayd El Mestari est un jeune développeur prodige de 11 ans, résidant à Casablanca au Maroc 🇲🇦, scolarisé en 6ème année primaire aux Écoles Riad." 
+                },
+                { 
+                    keys: ['age', 'quel âge', 'ans', 'vie', 'né', 'date de naissance', 'tu es né quand', 'tu as quel âge'], 
+                    ans: "Zayd a 11 ans et développe déjà de superbes compétences en informatique, en mathématiques et en création web !" 
+                },
+                { 
+                    keys: ['habite', 'ville', 'pays', 'maroc', 'casablanca', 'adresse', 'localisation', 'où vis tu', 'tu vis où', 'tu habites où'], 
+                    ans: "Zayd vit à Casablanca, une ville magnifique située au Maroc 🇲🇦." 
+                },
+                { 
+                    keys: ['ecole', 'école', 'ecoles riad', 'classe', 'etudes', 'etudiant', 'primaire', 'professeur', 'élèves'], 
+                    ans: "Zayd étudie avec brio en 6ème année primaire au sein des Écoles Riad." 
+                },
+
+                // 2. Compétences Techniques & Code
+                { 
+                    keys: ['competence', 'compétence', 'technologie', 'stack', 'niveau', 'maîtrise', 'capacités', 'techno'], 
+                    ans: "Zayd maîtrise les fondations indispensables du web : HTML5, CSS3 et JavaScript, lui permettant de concevoir des interfaces modernes et interactives." 
+                },
+                { 
+                    keys: ['html', 'balise', 'structure web', 'markup'], 
+                    ans: "L'HTML est la structure fondamentale du web que Zayd utilise pour bâtir l'ossature de ses projets de sites web." 
+                },
+                { 
+                    keys: ['css', 'style', 'design', 'glassmorphism', 'couleur', 'feuille de style'], 
+                    ans: "Le CSS permet à Zayd de styliser ses pages avec des designs sombres 'néant', du glassmorphism et des animations fluides." 
+                },
+                { 
+                    keys: ['javascript', 'js', 'script', 'dom', 'fonction'], 
+                    ans: "JavaScript est le langage de programmation favori de Zayd pour rendre ses sites vivants, dynamiques et interactifs." 
+                },
+                { 
+                    keys: ['code', 'coder', 'programmation', 'developpeur', 'développement', 'programme', 'développer'], 
+                    ans: "Le code est la plus grande passion de Zayd, qui imagine et programme constamment de nouveaux projets innovants." 
+                },
+                { 
+                    keys: ['math', 'mathématique', 'calcul', 'nombre', 'géométrie', 'chiffre'], 
+                    ans: "Zayd adore les mathématiques, ce qui l'aide énormément à structurer sa logique de programmation informatique." 
+                },
+
+                // 3. Projets & Portfolio
+                { 
+                    keys: ['projet', 'portfolio', 'realisation', 'site', 'travail', 'creation', 'application'], 
+                    ans: "Zayd a conçu ce portfolio interactif intégrant un design sombre 'néant', un effet lumineux et un assistant virtuel intelligent !" 
+                },
+                { 
+                    keys: ['esthetique', 'néant', 'sombre', 'glassmorphism', 'theme', 'couleurs sombres'], 
+                    ans: "Le portfolio de Zayd utilise un thème sombre 'néant' épuré, rehaussé de touches lumineuses inspirées de Gemini." 
+                },
+
+                // 4. Salutations & Politesse
+                { 
+                    keys: ['bonjour', 'salut', 'coucou', 'hello', 'hey', 'hi', 'salam', 'bonsoir'], 
+                    ans: "Bonjour ! Bienvenue sur le portfolio officiel de Zayd. Que souhaitez-vous découvrir ?" 
+                },
+                { 
+                    keys: ['ca va', 'comment ça va', 'tu vas bien', 'comment vas tu', 'ça va', 'tu te sens comment', 'comment tu vas'], 
+                    ans: "Tout va à merveille ! Comment puis-je vous aider à explorer le site de Zayd aujourd'hui ?" 
+                },
+                { 
+                    keys: ['merci', 'cool', 'super', 'genial', 'parfait', 'top', 'merci beaucoup', 'génial'], 
+                    ans: "Avec grand plaisir ! N'hésitez pas si vous avez d'autres questions sur le parcours de Zayd." 
+                },
+                { 
+                    keys: ['au revoir', 'bye', 'a plus', 'salutations', 'tchao', 'adieu', 'à plus'], 
+                    ans: "Au revoir ! Merci de votre visite sur le portfolio de Zayd 🚀." 
+                },
+                { 
+                    keys: ['aide', 'help', 'que fais tu', 'bot', 'assistant', 'commandes', 'tu sers à quoi'], 
+                    ans: "Je suis l'assistant virtuel du portfolio. Je peux vous renseigner sur l'âge, l'école, les projets et les compétences de Zayd en programmation !" 
+                },
+
+                // 5. Sciences, Espace & Culture Générale Connexe
+                { 
+                    keys: ['science', 'physique', 'chimie', 'experience', 'biologie', 'scientifique'], 
+                    ans: "La science permet de comprendre l'univers, tout comme la programmation informatique permet de bâtir de nouveaux mondes numériques." 
+                },
+                { 
+                    keys: ['espace', 'univers', 'planete', 'etoile', 'galaxie', 'mars', 'lune', 'astronomie'], 
+                    ans: "L'univers est infini, tout comme les possibilités créatives du code et du développement web !" 
+                },
+                { 
+                    keys: ['intelligence artificielle', 'ia', 'robot', 'machine learning', 'chatgpt', 'gemini', 'bot intelligent'], 
+                    ans: "L'intelligence artificielle est un domaine passionnant que Zayd intègre directement dans son portfolio avec cet assistant virtuel !" 
+                },
+                { 
+                    keys: ['ordinateur', 'pc', 'mac', 'technologie', 'materiel', 'clavier', 'écran'], 
+                    ans: "L'ordinateur est l'outil magique de Zayd pour donner vie à toutes ses idées créatives en programmation." 
+                },
+                { 
+                    keys: ['internet', 'web', 'reseau', 'navigateur', 'http', 'lien'], 
+                    ans: "Le web connecte le monde entier, et Zayd y contribue à sa façon depuis Casablanca au Maroc !" 
+                },
+                { 
+                    keys: ['temps', 'meteo', 'climat', 'soleil', 'pluie', 'chaud', 'froid'], 
+                    ans: "Il fait généralement très beau à Casablanca ! Mais ici, le seul climat que nous gérons est celui du code propre et structuré." 
+                },
+                { 
+                    keys: ['musique', 'chanson', 'audio', 'son', 'morceau', 'concert', 'écouter'], 
+                    ans: "La musique stimule la concentration, ce qui est idéal pour coder de superbes applications web en HTML, CSS et JS." 
+                },
+                { 
+                    keys: ['sport', 'football', 'jeu', 'gamer', 'gaming', 'foot', 'jouer'], 
+                    ans: "Le sport est excellent pour la santé, tout comme l'entraînement logique est indispensable pour progresser en programmation." 
+                },
+                { 
+                    keys: ['livre', 'lecture', 'histoire', 'apprendre', 'cours', 'formation', 'lire'], 
+                    ans: "Apprendre chaque jour est la devise de Zayd, que ce soit à l'école ou en autodidacte sur le web." 
+                },
+                { 
+                    keys: ['famille', 'parent', 'ami', 'frere', 'soeur', 'proches'], 
+                    ans: "Zayd est un jeune garçon très bien entouré par sa famille et ses amis à Casablanca." 
+                },
+                { 
+                    keys: ['langue', 'francais', 'anglais', 'parler', 'arabe', 'langages'], 
+                    ans: "Zayd s'exprime parfaitement en français et apprend continuellement pour enrichir ses connaissances." 
+                },
+                { 
+                    keys: ['travail', 'metier', 'profession', 'futur', 'grand', 'avenir'], 
+                    ans: "Plus grand, Zayd se destine à un brillant avenir dans les technologies et le développement informatique." 
+                },
+                { 
+                    keys: ['passion', 'loisir', 'hobby', 'aimer', 'adorer', 'centres d\'intérêt'], 
+                    ans: "Les principales passions de Zayd sont la programmation web, les mathématiques et l'exploration de nouvelles technologies." 
+                }
+            ];
+
             let reply = null;
 
-            // 1. Identité, Âge & Localisation de Zayd (Variantes multiples)
-            if (q.includes('qui est zayd') || q.includes('c\'est qui zayd') || q.includes('zayd el mestari') || q.includes('qui es tu zayd') || q.includes('présente zayd')) {
-                reply = "Zayd El Mestari est un jeune développeur prodige de 11 ans, résidant à Casablanca au Maroc 🇲🇦, scolarisé en 6ème année primaire aux Écoles Riad.";
-            } else if (q.includes('age') || q.includes('quel âge') || q.includes('ans') || q.includes('vie') || q.includes('né')) {
-                reply = "Zayd a 11 ans et développe déjà de superbes compétences en informatique, en mathématiques et en création web !";
-            } else if (q.includes('habite') || q.includes('ville') || q.includes('pays') || q.includes('maroc') || q.includes('casablanca') || q.includes('adresse')) {
-                reply = "Zayd vit à Casablanca, une ville magnifique située au Maroc 🇲🇦.";
-            } else if (q.includes('ecole') || q.includes('école') || q.includes('ecoles riad') || q.includes('classe') || q.includes('etudes') || q.includes('etudiant')) {
-                reply = "Zayd étudie avec brio en 6ème année primaire au sein des Écoles Riad.";
+            for (let item of database) {
+                if (item.keys.some(k => q.includes(k))) {
+                    reply = item.ans;
+                    break;
+                }
             }
 
-            // 2. Compétences Techniques & Code (Variantes multiples)
-            else if (q.includes('competence') || q.includes('compétence') || q.includes('technologie') || q.includes('stack') || q.includes('niveau')) {
-                reply = "Zayd maîtrise les fondations indispensables du web : HTML5, CSS3 et JavaScript, lui permettant de concevoir des interfaces modernes et interactives.";
-            } else if (q.includes('html') || q.includes('balise')) {
-                reply = "L'HTML est la structure fondamentale du web que Zayd utilise pour bâtir l'ossature de ses projets de sites web.";
-            } else if (q.includes('css') || q.includes('style') || q.includes('design')) {
-                reply = "Le CSS permet à Zayd de styliser ses pages avec des designs sombres 'néant', du glassmorphism et des animations fluides.";
-            } else if (q.includes('javascript') || q.includes('js') || q.includes('script')) {
-                reply = "JavaScript est le langage de programmation favori de Zayd pour rendre ses sites vivants, dynamiques et interactifs.";
-            } else if (q.includes('code') || q.includes('coder') || q.includes('programmation') || q.includes('developpeur') || q.includes('développement')) {
-                reply = "Le code est la plus grande passion de Zayd, qui imagine et programme constamment de nouveaux projets innovants.";
-            } else if (q.includes('math') || q.includes('mathématique') || q.includes('calcul') || q.includes('nombre')) {
-                reply = "Zayd adore les mathématiques, ce qui l'aide énormément à structurer sa logique de programmation informatique.";
-            }
-
-            // 3. Projets & Portfolio (Variantes multiples)
-            else if (q.includes('projet') || q.includes('portfolio') || q.includes('realisation') || q.includes('site') || q.includes('travail')) {
-                reply = "Zayd a conçu ce portfolio interactif intégrant un design sombre 'néant', un effet lumineux et un assistant virtuel intelligent !";
-            } else if (q.includes('esthetique') || q.includes('néant') || q.includes('sombre') || q.includes('glassmorphism')) {
-                reply = "Le portfolio de Zayd utilise un thème sombre 'néant' épuré, rehaussé de touches lumineuses inspirées de Gemini.";
-            }
-
-            // 4. Salutations, Politesse & Conversations (Variantes massives)
-            else if (q.includes('bonjour') || q.includes('salut') || q.includes('coucou') || q.includes('hello') || q.includes('hey') || q.includes('hi')) {
-                reply = "Bonjour ! Bienvenue sur le portfolio officiel de Zayd. Que souhaitez-vous découvrir ?";
-            } else if (q.includes('ca va') || q.includes('comment ça va') || q.includes('tu vas bien') || q.includes('comment vas tu') || q.includes('ça va')) {
-                reply = "Tout va à merveille ! Comment puis-je vous aider à explorer le site de Zayd aujourd'hui ?";
-            } else if (q.includes('merci') || q.includes('cool') || q.includes('super') || q.includes('genial') || q.includes('parfait') || q.includes('top')) {
-                reply = "Avec grand plaisir ! N'hésitez pas si vous avez d'autres questions sur le parcours de Zayd.";
-            } else if (q.includes('au revoir') || q.includes('bye') || q.includes('a plus') || q.includes('salutations') || q.includes('tchao')) {
-                reply = "Au revoir ! Merci de votre visite sur le portfolio de Zayd 🚀.";
-            } else if (q.includes('aide') || q.includes('help') || q.includes('que fais tu') || q.includes('bot') || q.includes('assistant')) {
-                reply = "Je suis l'assistant virtuel du portfolio. Je peux vous renseigner sur l'âge, l'école, les projets et les compétences de Zayd en programmation !";
-            }
-
-            // 5. Sciences, Espace, Technologies & Culture Générale (Variantes étendues pour atteindre plus de 400 déclinaisons sémantiques)
-            else if (q.includes('science') || q.includes('physique') || q.includes('chimie') || q.includes('experience')) {
-                reply = "La science permet de comprendre l'univers, tout comme la programmation informatique permet de bâtir de nouveaux mondes numériques.";
-            } else if (q.includes('espace') || q.includes('univers') || q.includes('planete') || q.includes('etoile') || q.includes('galaxie')) {
-                reply = "L'univers est infini, tout comme les possibilités créatives du code et du développement web !";
-            } else if (q.includes('intelligence artificielle') || q.includes('ia') || q.includes('robot') || q.includes('machine learning')) {
-                reply = "L'intelligence artificielle est un domaine passionnant que Zayd intègre directement dans son portfolio avec cet assistant virtuel !";
-            } else if (q.includes('ordinateur') || q.includes('pc') || q.includes('mac') || q.includes('technologie') || q.includes('materiel')) {
-                reply = "L'ordinateur est l'outil magique de Zayd pour donner vie à toutes ses idées créatives en programmation.";
-            } else if (q.includes('internet') || q.includes('web') || q.includes('reseau') || q.includes('navigateur')) {
-                reply = "Le web connecte le monde entier, et Zayd y contribue à sa façon depuis Casablanca au Maroc !";
-            } else if (q.includes('temps') || q.includes('meteo') || q.includes('climat') || q.includes('soleil') || q.includes('pluie')) {
-                reply = "Il fait généralement très beau à Casablanca ! Mais ici, le seul climat que nous gérons est celui du code propre et structuré.";
-            } else if (q.includes('musique') || q.includes('chanson') || q.includes('audio') || q.includes('son')) {
-                reply = "La musique stimule la concentration, ce qui est idéal pour coder de superbes applications web en HTML, CSS et JS.";
-            } else if (q.includes('sport') || q.includes('football') || q.includes('jeu') || q.includes('gamer')) {
-                reply = "Le sport est excellent pour la santé, tout comme l'entraînement logique est indispensable pour progresser en programmation.";
-            } else if (q.includes('livre') || q.includes('lecture') || q.includes('histoire') || q.includes('apprendre')) {
-                reply = "Apprendre chaque jour est la devise de Zayd, que ce soit à l'école ou en autodidacte sur le web.";
-            } else if (q.includes('famille') || q.includes('parent') || q.includes('ami')) {
-                reply = "Zayd est un jeune garçon très bien entouré par sa famille et ses amis à Casablanca.";
-            } else if (q.includes('langue') || q.includes('francais') || q.includes('anglais') || q.includes('parler')) {
-                reply = "Zayd s'exprime parfaitement en français et apprend continuellement pour enrichir ses connaissances.";
-            } else if (q.includes('travail') || q.includes('metier') || q.includes('profession') || q.includes('futur') || q.includes('grand')) {
-                reply = "Plus grand, Zayd se destine à un brillant avenir dans les technologies et le développement informatique.";
-            } else if (q.includes('passion') || q.includes('loisir') || q.includes('hobby') || q.includes('aimer')) {
-                reply = "Les principales passions de Zayd sont la programmation web, les mathématiques et l'exploration de nouvelles technologies.";
-            }
-
-            // --- CONDITION OBLIGATOIRE STRICTE : SI HORS BASE DE DONNÉES ---
+            // --- CONDITION OBLIGATOIRE DE REJET STRICT ---
             if (!reply) {
                 reply = "Change de question, nous n'avons pas ça dans la base de données.";
             }
